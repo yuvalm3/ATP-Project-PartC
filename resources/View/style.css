@@ -1,0 +1,61 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 14pt;
+}
+
+.menu-bar {
+    -fx-background-color: linear-gradient(to right, #2b5876, #4e4376);
+}
+
+.menu, .menu-item {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.menu-item:hover {
+    -fx-background-color: #6c63ff;
+    -fx-text-fill: white;
+}
+
+#mainContent {
+    -fx-background-image: url("../images/startBackground.jpg");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.button {
+    -fx-background-color: #6c63ff;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI Black", Arial, sans-serif;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+    -fx-font-size: 18pt;
+    -fx-background-radius: 20;
+    -fx-padding: 8 16;
+}
+
+.button:hover {
+    -fx-background-color: #4e4376;
+}
+
+* {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Header container style: gradient background and drop shadow */
+.header-container {
+    -fx-background-color: linear-gradient(to right, #4e4376, #2b5876);
+    -fx-padding: 16 0 16 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 4);
+}
+
+/* Header text: large, bold, white */
+.header-text {
+    -fx-font-family: "Segoe UI Black", Arial, sans-serif;
+    -fx-font-size: 20pt;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-letter-spacing: 1px;
+}
