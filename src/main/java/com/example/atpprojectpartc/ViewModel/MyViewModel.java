@@ -39,6 +39,7 @@ public class MyViewModel extends Observable implements Observer {
         switch ((String) arg) {
             case "maze":
                 maze.set(model.getMaze());
+                position.set(model.getCurrentPosition()); // <-- חובה!
                 setChanged();
                 notifyObservers("maze");
                 break;
@@ -70,4 +71,17 @@ public class MyViewModel extends Observable implements Observer {
     public ReadOnlyObjectProperty<Maze> mazeProperty()         { return maze.getReadOnlyProperty(); }
     public ReadOnlyObjectProperty<Solution> solutionProperty() { return solution.getReadOnlyProperty(); }
     public ReadOnlyObjectProperty<Position> positionProperty() { return position.getReadOnlyProperty(); }
+    public Maze getMaze() {
+        return maze.get();
+    }
+
+    public Position getCurrentPosition() {
+        return position.get();
+    }
+
+    public void setMazeDimensions(int rows, int cols) {
+        this.rows.set(rows);
+        this.cols.set(cols);
+    }
+
 }

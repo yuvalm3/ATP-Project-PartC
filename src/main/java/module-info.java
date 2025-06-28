@@ -10,4 +10,6 @@ module com.example.atpprojectpartc {
     opens com.example.atpprojectpartc.View to javafx.fxml;
     exports com.example.atpprojectpartc.Model;
     opens com.example.atpprojectpartc.Model to javafx.fxml;
+    exports com.example.atpprojectpartc.ViewModel;
+    opens com.example.atpprojectpartc.ViewModel to javafx.fxml;
 }

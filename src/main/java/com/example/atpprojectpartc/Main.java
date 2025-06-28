@@ -38,10 +38,14 @@ public class Main extends Application {
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
+        scene.setOnKeyPressed(event -> {
+            controller.handleKeyPress(event);
+        });
+
         primaryStage.setTitle("Maze Game");
         primaryStage.show();
 
-        root.requestFocus();
+        controller.getMazeCanvas().requestFocus(); // 👈 חשוב מאוד
     }
 
     public static void main(String[] args) {
