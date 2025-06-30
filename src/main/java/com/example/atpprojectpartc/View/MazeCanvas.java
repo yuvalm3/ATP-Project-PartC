@@ -76,7 +76,7 @@ public class MazeCanvas extends Canvas {
         Position pos = playerPosition.get();
         Position goal = m.getGoalPosition();
 
-        // ציור המסלול
+        // Draw path
         List<Position> path = solutionPath.get();
         if (path != null) {
             for (Position p : path) {
@@ -88,7 +88,7 @@ public class MazeCanvas extends Canvas {
             }
         }
 
-        // צייר את השחקן
+        // Draw player
         if (pos != null) {
             System.out.println("draw(): drawing player at " + pos);
             gc.drawImage(playerImage, pos.getColumnIndex() * cellW,
@@ -96,7 +96,7 @@ public class MazeCanvas extends Canvas {
                     cellW, cellH);
         }
 
-        // צייר את היעד
+        // Draw destiny
         if (goal != null) {
             System.out.println("draw(): drawing goal at " + goal);
             gc.drawImage(goalImage, goal.getColumnIndex() * cellW,
@@ -108,7 +108,7 @@ public class MazeCanvas extends Canvas {
 
 
 
-
+    // Wrapper for draw() function
     public void redraw() {
         draw();
     }

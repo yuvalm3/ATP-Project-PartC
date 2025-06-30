@@ -5,51 +5,57 @@ import com.example.atpprojectpartc.ViewModel.MyViewModel;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.List;
 import algorithms.search.MazeState;
 import java.util.Observable;
 import java.util.Observer;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.KeyCode;
+import javafx.stage.FileChooser;
 
 
 public class MyViewController implements IView, Observer {
 
     @FXML private StackPane centerStack;
     @FXML private MazeCanvas mazeCanvas;
-    @FXML private Button btnNewGame;
-    @FXML private Button btnSaveGame;
-    @FXML private Button btnOptions;
-    @FXML private Button btnHelp;
-    @FXML private Button btnAbout;
-    @FXML private Button btnExit;
-    @FXML private TextField txtRows;
-    @FXML private TextField txtCols;
+    @FXML private Button btnSaveMaze;
     @FXML private Button btnSolveMaze;
-
-
+    @FXML private Button btnBackToMenu;
 
     private MyViewModel vm;
 
     @FXML
     public void initialize() {
-        btnSaveGame.setDisable(true);
-
-        // קישור גודל הקנבס לגודל הפנימי של ה-StackPane
         mazeCanvas.widthProperty().bind(centerStack.widthProperty());
         mazeCanvas.heightProperty().bind(centerStack.heightProperty());
+        mazeCanvas.widthProperty().addListener((o, ov, nv) -> mazeCanvas.redraw());
+        mazeCanvas.heightProperty().addListener((o, ov, nv) -> mazeCanvas.redraw());
 
-        // בכל שינוי גודל – לצייר מחדש
-        mazeCanvas.widthProperty().addListener((obs, oldVal, newVal) -> mazeCanvas.redraw());
-        mazeCanvas.heightProperty().addListener((obs, oldVal, newVal) -> mazeCanvas.redraw());
+        mazeCanvas.setFocusTraversable(true);
+        mazeCanvas.setOnKeyPressed(this::handleKeyPress);
+        mazeCanvas.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                Platform.runLater(() -> {
+                    if (!btnSolveMaze.isFocused() && !btnSaveMaze.isFocused() && !btnBackToMenu.isFocused()) {
+                        mazeCanvas.requestFocus();
+                    }
+                });
+            }
+        });
+        centerStack.setOnMousePressed(e -> Platform.runLater(() -> mazeCanvas.requestFocus()));
+
+        Platform.runLater(() -> mazeCanvas.requestFocus());
     }
 
 
@@ -78,25 +84,149 @@ public class MyViewController implements IView, Observer {
 
             vm.setMazeDimensions(rows, cols);
             vm.generateMaze();
-            btnSaveGame.setDisable(false);
-            mainContent.setVisible(false); // הסתרת התפריט
+            mainContent.setVisible(false);
             btnSolveMaze.setVisible(true);
             btnSolveMaze.setManaged(true);
+            btnSaveMaze.setVisible(true);
+            btnSaveMaze.setManaged(true);
+            btnBackToMenu.setVisible(true);
+            btnBackToMenu.setManaged(true);
         });
-        mazeCanvas.requestFocus();
+        Platform.runLater(() -> {
+            mazeCanvas.requestFocus();
+        });
     }
 
     @FXML private void onSolveMaze() {
         vm.solveMaze();
-        mazeCanvas.requestFocus(); // 👈 מחזיר את הפוקוס לקנבס אחרי לחיצה על כפתור
+        mazeCanvas.requestFocus(); // Focus on canvas after button pressed
     }
 
+    // Present the properties file
+    @FXML private void onOptions() {
+        try {
+            Properties props = new Properties();
+            File file = new File("resources/config.properties");
+            if (!file.exists()) {
+                showAlert("Settings", "File not found: " + file.getAbsolutePath());
+                return;
+            }
 
-    @FXML private void onSaveGame() { /* TODO */ }
-    @FXML private void onOptions() { /* TODO */ }
-    @FXML private void onHelp() { /* TODO */ }
-    @FXML private void onAbout() { /* TODO */ }
+            FileInputStream input = new FileInputStream(file);
+            props.load(input);
+
+            StringBuilder content = new StringBuilder();
+            for (String key : props.stringPropertyNames()) {
+                String value = props.getProperty(key);
+                content.append(key).append(" = ").append(value).append("\n");
+            }
+
+            showAlert("Application Settings", content.toString());
+
+        } catch (IOException e) {
+            showAlert("Error", "Failed to load settings:\n" + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onHelp() {
+        String helpText = """
+            Welcome to the Maze Game!
+
+            🎯 Goal:
+            Reach the green goal circle using the arrow keys or diagonal keys.
+
+            🎮 Controls:
+            - Arrow Keys (↑↓←→): Move up, down, left, right.
+            - Diagonal Movement: Use keys 1, 3, 7, 9 or Numpad 1,3,7,9:
+              ↖ 1 | ↗ 3
+              ↙ 7 | ↘ 9
+
+            📍 Board Markings:
+            - Wall image cells = walls (not walkable)
+            - Green cells = paths
+            - Messi image = your current position
+            - Goalpost circle = goal position
+            - Soccer Ball path = solution path
+
+            Good luck!
+            """;
+
+        showAlert("Maze Game Help", helpText);
+    }
+
+    @FXML
+    private void onAbout() {
+        String aboutText = """
+            Maze World Cup Final - About
+
+            👨‍💻 Developers:
+            - Yuval - 2nd year Student in SISE, BGU University Inc.
+            - Almog - 2nd year Student in SISE, BGU University Inc.
+
+            🔧 Maze Generation Algorithm:
+            - Using a tweaked version of Prim's algorithm.
+                   * The idea is to start with all walls (1), and slowly carve out paths (0)
+                   * in a way that ensures an interesting layout with twists and branches.
+            - Supports adjustable dimensions (rows x columns)
+
+            🧠 Maze Solving Algorithm:
+            - Breadth-First Search - used to explore or traverse a maze level by level,
+              starting from the root node and visiting all neighbors before moving to the next level.
+              Uses a queue to keep track of nodes to visit next.
+              Guarantees the shortest path.
+          
+            ⚙️ Technologies Used:
+            - JavaFX (UI)
+            - Java 15 (Project language level)
+            - MVVM architecture with Observer design pattern 
+
+            📁 Resources:
+            - External config: /resources/config.properties
+            - Images for GUI: /resources/images (png&jpg)
+            - Modular design and threading for server-client
+
+            Enjoy solving the maze!
+            """;
+
+        showAlert("About Maze Game", aboutText);
+    }
+
     @FXML private void onExit() { Platform.exit(); }
+
+    @FXML
+    private void onSaveMaze() {
+        Maze maze = vm.getMaze();
+        Position playerPos = vm.getCurrentPosition();
+
+        if (maze == null || playerPos == null) {
+            showAlert("Save Maze", "No maze to save.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Maze As");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File file = fileChooser.showSaveDialog(mazeCanvas.getScene().getWindow());
+
+        if (file != null) {
+            try (PrintWriter writer = new PrintWriter(file)) {
+                int[][] grid = maze.getMazeMatrix();
+                writer.println("Maze:");
+                for (int[] row : grid) {
+                    for (int cell : row) {
+                        writer.print(cell + " ");
+                    }
+                    writer.println();
+                }
+                writer.println("Player: " + playerPos.getRowIndex() + "," + playerPos.getColumnIndex());
+                showAlert("Success", "Maze saved successfully.");
+            } catch (IOException e) {
+                showAlert("Error", "Failed to save maze: " + e.getMessage());
+            }
+        }
+    }
+
 
     @Override
     public void update(Observable o, Object arg) {
@@ -110,7 +240,7 @@ public class MyViewController implements IView, Observer {
                 Platform.runLater(() -> {
                     mazeCanvas.setMaze(maze);
                     mazeCanvas.setPlayerPosition(pos);
-                    mazeCanvas.requestFocus(); // 👈 כאן נדאג שיקבל פוקוס אחרי ציור מבוך
+                    mazeCanvas.requestFocus(); // Request focus again
                 });
                 break;
 
@@ -145,6 +275,10 @@ public class MyViewController implements IView, Observer {
             case DOWN -> tryMoveTo(row + 1, col);
             case LEFT -> tryMoveTo(row, col - 1);
             case RIGHT -> tryMoveTo(row, col + 1);
+            case DIGIT1, NUMPAD7 -> tryMoveTo(row - 1, col - 1); // ↖
+            case DIGIT3, NUMPAD9 -> tryMoveTo(row - 1, col + 1); // ↗
+            case DIGIT7, NUMPAD1 -> tryMoveTo(row + 1, col - 1); // ↙
+            case DIGIT9, NUMPAD3 -> tryMoveTo(row + 1, col + 1); // ↘
         }
     }
 
@@ -161,13 +295,13 @@ public class MyViewController implements IView, Observer {
         Position newPos = new Position(newRow, newCol);
         vm.moveCharacter(newPos);
 
-        // בדיקה אם הגענו ליעד
+        // Check if we're in maze end point
         if (newPos.equals(maze.getGoalPosition())) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Maze Completed!");
                 alert.setHeaderText(null);
-                alert.setContentText("Goal!!! 🏁");
+                alert.setContentText("Messi scored a Goal!!! 🏁");
                 alert.showAndWait();
             });
         }
@@ -178,6 +312,33 @@ public class MyViewController implements IView, Observer {
         return mazeCanvas;
     }
 
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 
+    @FXML
+    private void onBackToMenu() {
+        // Clean Maze GUI
+        mazeCanvas.setMaze(null);
+        mazeCanvas.setPlayerPosition(null);
+        mazeCanvas.setSolutionPath(null);
+        mazeCanvas.redraw();
 
+        // Present Main Menu
+        mainContent.setVisible(true);
+
+        btnSolveMaze.setVisible(false);
+        btnSolveMaze.setManaged(false);
+        btnSaveMaze.setVisible(false);
+        btnSaveMaze.setManaged(false);
+        btnBackToMenu.setVisible(false);
+        btnBackToMenu.setManaged(false);
+
+        // Canvas focus request
+        mazeCanvas.requestFocus();
+    }
 }

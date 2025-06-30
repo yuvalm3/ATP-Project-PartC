@@ -5,6 +5,7 @@ import com.example.atpprojectpartc.Model.MyModel;
 import com.example.atpprojectpartc.View.MyViewController;
 import com.example.atpprojectpartc.ViewModel.MyViewModel;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,14 +39,19 @@ public class Main extends Application {
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-        scene.setOnKeyPressed(event -> {
-            controller.handleKeyPress(event);
-        });
+        //scene.setOnKeyPressed(controller::handleKeyPress);
 
         primaryStage.setTitle("Maze Game");
+        primaryStage.setOnCloseRequest(event -> {
+            genServer.stop();
+            solServer.stop();
+            Platform.exit();
+            System.exit(0);
+        });
+
         primaryStage.show();
 
-        controller.getMazeCanvas().requestFocus(); // 👈 חשוב מאוד
+        controller.getMazeCanvas().requestFocus();
     }
 
     public static void main(String[] args) {

@@ -9,6 +9,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.Region?>
+
 
 <BorderPane xmlns="http://javafx.com/javafx/17.0.6"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -20,6 +25,26 @@
       <children>
         <Label text="Maze World Cup Final - Will Messi solve the maze?"
                styleClass="header-text"/>
+        <Region fx:id="spacer" HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnSolveMaze"
+                text="Solve Maze"
+                onAction="#onSolveMaze"
+                visible="false" managed="false"
+                styleClass="menu-button"/>
+
+        <Button fx:id="btnSaveMaze"
+                text="Save Maze"
+                onAction="#onSaveMaze"
+                visible="false" managed="false"
+                styleClass="menu-button"/>
+
+        <Button fx:id="btnBackToMenu"
+                text="Back To Menu"
+                onAction="#onBackToMenu"
+                visible="false" managed="false"
+                styleClass="menu-button"/>
+
       </children>
     </HBox>
   </top>
@@ -28,10 +53,10 @@
     <StackPane fx:id="centerStack" BorderPane.alignment="CENTER">
       <children>
 
-        <!-- Canvas לציור המבוך -->
+        <!-- Canvas for maze drawing -->
         <MazeCanvas fx:id="mazeCanvas" width="600" height="600"/>
 
-        <!-- GridPane עם התפריט הראשי -->
+        <!-- Main Menu -->
         <GridPane fx:id="mainContent"
                   style="-fx-background-color: transparent;"
                   hgap="10" vgap="10"
@@ -54,9 +79,6 @@
             <Button fx:id="btnNewGame" text="New Game"
                     GridPane.columnIndex="1" GridPane.rowIndex="0"
                     styleClass="menu-button" onAction="#onNewGame"/>
-            <Button fx:id="btnSaveGame" text="Save Game"
-                    GridPane.columnIndex="1" GridPane.rowIndex="1"
-                    styleClass="menu-button" onAction="#onSaveGame" disable="true"/>
             <Button fx:id="btnOptions" text="Options"
                     GridPane.columnIndex="1" GridPane.rowIndex="2"
                     styleClass="menu-button" onAction="#onOptions"/>
@@ -72,15 +94,6 @@
           </children>
         </GridPane>
 
-        <!-- Solve Maze Button צף על התחתית -->
-        <Button fx:id="btnSolveMaze"
-                text="Solve Maze"
-                styleClass="menu-button"
-                onAction="#onSolveMaze"
-                visible="false" managed="false"
-                StackPane.alignment="BOTTOM_CENTER"
-                translateY="-10"
-                focusTraversable="false"/>
       </children>
     </StackPane>
   </center>
