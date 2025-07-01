@@ -79,8 +79,19 @@ public class MyViewController implements IView, Observer {
 
         inputDialog.showAndWait().ifPresent(input -> {
             String[] parts = input.split(",");
-            int rows = Integer.parseInt(parts[0].trim());
-            int cols = Integer.parseInt(parts[1].trim());
+            if (parts.length != 2) {
+                showError("Invalid input", "Please enter two numbers separated by a comma.");
+                return;
+            }
+
+            try {
+                int rows = Integer.parseInt(parts[0].trim());
+                int cols = Integer.parseInt(parts[1].trim());
+
+                if (rows <= 0 || cols <= 0) {
+                    showError("Invalid input", "Rows and columns must be positive integers.");
+                    return;
+                }
 
             vm.setMazeDimensions(rows, cols);
             vm.generateMaze();
@@ -91,11 +102,24 @@ public class MyViewController implements IView, Observer {
             btnSaveMaze.setManaged(true);
             btnBackToMenu.setVisible(true);
             btnBackToMenu.setManaged(true);
+
+            } catch (NumberFormatException e) {
+                showError("Invalid input", "Please enter valid integers.");
+            }
         });
         Platform.runLater(() -> {
             mazeCanvas.requestFocus();
         });
     }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     @FXML private void onSolveMaze() {
         vm.solveMaze();

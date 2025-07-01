@@ -31,19 +31,25 @@
                 text="Solve Maze"
                 onAction="#onSolveMaze"
                 visible="false" managed="false"
-                styleClass="menu-button"/>
+                styleClass="menu-button"
+                translateY="-10"
+                focusTraversable="false"/>
 
         <Button fx:id="btnSaveMaze"
                 text="Save Maze"
                 onAction="#onSaveMaze"
                 visible="false" managed="false"
-                styleClass="menu-button"/>
+                styleClass="menu-button"
+                translateY="-10"
+                focusTraversable="false"/>
 
         <Button fx:id="btnBackToMenu"
                 text="Back To Menu"
                 onAction="#onBackToMenu"
                 visible="false" managed="false"
-                styleClass="menu-button"/>
+                styleClass="menu-button"
+                translateY="-10"
+                focusTraversable="false"/>
 
       </children>
     </HBox>
