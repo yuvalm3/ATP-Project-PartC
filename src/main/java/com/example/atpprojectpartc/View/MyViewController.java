@@ -5,8 +5,6 @@ import com.example.atpprojectpartc.ViewModel.MyViewModel;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -23,8 +21,14 @@ import java.util.Observable;
 import java.util.Observer;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
-
+/**
+ The main JavaFX controller class for the user interface.
+ It handles user interactions (like button clicks and key presses),
+ updates the view based on ViewModel changes, and manages the maze display and UI transitions.
+ */
 public class MyViewController implements IView, Observer {
 
     @FXML private StackPane centerStack;
@@ -32,9 +36,12 @@ public class MyViewController implements IView, Observer {
     @FXML private Button btnSaveMaze;
     @FXML private Button btnSolveMaze;
     @FXML private Button btnBackToMenu;
+    private MediaPlayer backgroundMusicPlayer;
+    private MediaPlayer victoryMusicPlayer;
 
     private MyViewModel vm;
 
+    // Initialize the program
     @FXML
     public void initialize() {
         mazeCanvas.widthProperty().bind(centerStack.widthProperty());
@@ -70,6 +77,7 @@ public class MyViewController implements IView, Observer {
 
     @FXML private GridPane mainContent;
 
+    // Handles creating new game
     @FXML
     private void onNewGame() {
         TextInputDialog inputDialog = new TextInputDialog("20,20");
@@ -102,6 +110,7 @@ public class MyViewController implements IView, Observer {
             btnSaveMaze.setManaged(true);
             btnBackToMenu.setVisible(true);
             btnBackToMenu.setManaged(true);
+            playBackgroundMusic();
 
             } catch (NumberFormatException e) {
                 showError("Invalid input", "Please enter valid integers.");
@@ -112,6 +121,7 @@ public class MyViewController implements IView, Observer {
         });
     }
 
+
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -121,6 +131,7 @@ public class MyViewController implements IView, Observer {
     }
 
 
+    // handles solving the maze
     @FXML private void onSolveMaze() {
         vm.solveMaze();
         mazeCanvas.requestFocus(); // Focus on canvas after button pressed
@@ -152,6 +163,7 @@ public class MyViewController implements IView, Observer {
         }
     }
 
+    // Present auxiliary data
     @FXML
     private void onHelp() {
         String helpText = """
@@ -179,6 +191,7 @@ public class MyViewController implements IView, Observer {
         showAlert("Maze Game Help", helpText);
     }
 
+    // Present data about developers and game
     @FXML
     private void onAbout() {
         String aboutText = """
@@ -216,6 +229,7 @@ public class MyViewController implements IView, Observer {
         showAlert("About Maze Game", aboutText);
     }
 
+    // handles press on exit button
     @FXML private void onExit() { Platform.exit(); }
 
     @FXML
@@ -252,6 +266,8 @@ public class MyViewController implements IView, Observer {
     }
 
 
+    // Part of Java’s built-in Observer pattern,
+    // where an object (the Observer) is notified of changes in another object (the Observable).
     @Override
     public void update(Observable o, Object arg) {
         if (vm == null) return;
@@ -287,6 +303,7 @@ public class MyViewController implements IView, Observer {
         }
     }
 
+    // Handles any key press by sending events
     public void handleKeyPress(KeyEvent event) {
         if (vm == null) return;
 
@@ -306,6 +323,7 @@ public class MyViewController implements IView, Observer {
         }
     }
 
+    // try to move to a certain point on maze
     private void tryMoveTo(int newRow, int newCol) {
         Maze maze = vm.getMaze();
         if (maze == null) return;
@@ -321,6 +339,18 @@ public class MyViewController implements IView, Observer {
 
         // Check if we're in maze end point
         if (newPos.equals(maze.getGoalPosition())) {
+            if (backgroundMusicPlayer != null) {
+                backgroundMusicPlayer.stop(); // stop last music
+            }
+
+            try {
+                Media winMedia = new Media(getClass().getResource("/audio/weAreTheChampions.mp3").toURI().toString());
+                victoryMusicPlayer = new MediaPlayer(winMedia);
+                victoryMusicPlayer.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Maze Completed!");
@@ -344,6 +374,7 @@ public class MyViewController implements IView, Observer {
         alert.showAndWait();
     }
 
+    // Handles press on back to main menu button
     @FXML
     private void onBackToMenu() {
         // Clean Maze GUI
@@ -362,7 +393,27 @@ public class MyViewController implements IView, Observer {
         btnBackToMenu.setVisible(false);
         btnBackToMenu.setManaged(false);
 
+        if (backgroundMusicPlayer != null) {
+            backgroundMusicPlayer.stop(); // stop last music
+        }
+        if (victoryMusicPlayer != null) {
+            victoryMusicPlayer.stop(); // stop last music
+        }
+
         // Canvas focus request
         mazeCanvas.requestFocus();
     }
+
+    // plays the background music
+    private void playBackgroundMusic() {
+        try {
+            Media bgMedia = new Media(getClass().getResource("/audio/muchachos.mp3").toURI().toString());
+            backgroundMusicPlayer = new MediaPlayer(bgMedia);
+            backgroundMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop forever
+            backgroundMusicPlayer.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -10,8 +10,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.Region?>
 
 
@@ -86,16 +84,16 @@
                     GridPane.columnIndex="1" GridPane.rowIndex="0"
                     styleClass="menu-button" onAction="#onNewGame"/>
             <Button fx:id="btnOptions" text="Options"
-                    GridPane.columnIndex="1" GridPane.rowIndex="2"
+                    GridPane.columnIndex="1" GridPane.rowIndex="1"
                     styleClass="menu-button" onAction="#onOptions"/>
             <Button fx:id="btnHelp" text="Help"
-                    GridPane.columnIndex="1" GridPane.rowIndex="3"
+                    GridPane.columnIndex="1" GridPane.rowIndex="2"
                     styleClass="menu-button" onAction="#onHelp"/>
             <Button fx:id="btnAbout" text="About"
-                    GridPane.columnIndex="1" GridPane.rowIndex="4"
+                    GridPane.columnIndex="1" GridPane.rowIndex="3"
                     styleClass="menu-button" onAction="#onAbout"/>
             <Button fx:id="btnExit" text="Exit"
-                    GridPane.columnIndex="1" GridPane.rowIndex="5"
+                    GridPane.columnIndex="1" GridPane.rowIndex="4"
                     styleClass="menu-button" onAction="#onExit"/>
           </children>
         </GridPane>

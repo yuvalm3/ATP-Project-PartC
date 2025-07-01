@@ -44,14 +44,12 @@
     -fx-faint-focus-color: transparent;
 }
 
-/* Header container style: gradient background and drop shadow */
 .header-container {
     -fx-background-color: linear-gradient(to right, #4e4376, #2b5876);
     -fx-padding: 16 0 16 0;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 4);
 }
 
-/* Header text: large, bold, white */
 .header-text {
     -fx-font-family: "Segoe UI Black", Arial, sans-serif;
     -fx-font-size: 20pt;

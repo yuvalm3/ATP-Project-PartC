@@ -8,15 +8,17 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
-
-
 import java.util.List;
 
+/**
+ Custom JavaFX Canvas component that visualizes the maze, player position, solution path, and goal.
+ It listens to data changes and dynamically redraws the graphical representation of the maze based on the current state.
+ */
 public class MazeCanvas extends Canvas {
     private final ObjectProperty<Maze> maze = new SimpleObjectProperty<>(this, "maze");
     private final ObjectProperty<Position> playerPosition = new SimpleObjectProperty<>(this, "position");
     private final ObjectProperty<List<Position>> solutionPath = new SimpleObjectProperty<>(this, "solution");
-    private final Image wallImage = new Image(getClass().getResourceAsStream("/images/wall.png"));
+    private final Image wallImage = new Image(getClass().getResourceAsStream("/images/conus.jpg"));
     private final Image playerImage = new Image(getClass().getResourceAsStream("/images/messi.jpg"));
     private final Image backgroundImage = new Image(getClass().getResourceAsStream("/images/mazeBackground.png"));
     private final Image goalImage = new Image(getClass().getResourceAsStream("/images/goal.jpg"));
@@ -104,8 +106,6 @@ public class MazeCanvas extends Canvas {
                     cellW, cellH);
         }
     }
-
-
 
 
     // Wrapper for draw() function
